@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RKE2 Data Factory</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #16213e; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #0f3460; }
+        h1 { color: #e94560; margin-bottom: 1rem; }
+        input { padding: 10px; border-radius: 5px; border: none; width: 80%; margin-bottom: 1rem; }
+        button { background: #e94560; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #950740; }
+        .status { margin-top: 1rem; font-size: 0.8rem; color: #4ecca3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Data Factory Pro</h1>
+        <p>Inserisci un dato da salvare nel DB del cluster RKE2</p>
+        <form action="/salva" method="post">
+            <input type="text" name="dato" placeholder="Scrivi qualcosa..." required>
+            <br>
+            <button type="submit">Invia al Cluster</button>
+        </form>
+        <div class="status">Node Master: Running | Workers: 2 | GitOps: Pending</div>
+    </div>
+</body>
+</html>
