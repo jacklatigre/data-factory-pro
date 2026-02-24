@@ -1,36 +1,48 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: docker
+    image: docker:24.0.5-dind
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: dind-storage
+      mountPath: /var/lib/docker
+  volumes:
+  - name: dind-storage
+    emptyDir: {}
+"""
+        }
+    }
 
     environment {
-        // Questo ID deve corrispondere a quello creato in Jenkins Credentials
         DOCKERHUB_REGISTRY = "docker.io"
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
-        // CAMBIA 'giacomo12305' con il tuo vero nome utente Docker Hub
-        APP_NAME = "tuo-username/data-factory-app"
+        // QUI METTI IL TUO USERNAME VERO
+        APP_NAME = "giacomo12305/data-factory-app" 
     }
 
     stages {
-        stage('Cloning Git') {
+        stage('Build & Push') {
             steps {
-                checkout scm
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Jenkins builda l'immagine usando il Dockerfile nella cartella /app
-                    sh "docker build -t ${APP_NAME}:latest ./app"
-                }
-            }
-        }
-
-        stage('Push to Docker Hub') {
-            steps {
-                script {
-                    // Login e Push su Docker Hub
-                    sh "echo \$DOCKERHUB_CREDENTIALS_PSW | docker login -u \$DOCKERHUB_CREDENTIALS_USR --password-stdin ${DOCKERHUB_REGISTRY}"
-                    sh "docker push ${APP_NAME}:latest"
+                // Usiamo il container 'docker' definito sopra
+                container('docker') {
+                    script {
+                        // Aspetta che Docker sia pronto
+                        sh "while ! docker ps; do sleep 1; done"
+                        
+                        // Build dell'immagine
+                        sh "docker build -t ${APP_NAME}:latest ./app"
+                        
+                        // Login e Push
+                        sh "echo \$DOCKERHUB_CREDENTIALS_PSW | docker login -u \$DOCKERHUB_CREDENTIALS_USR --password-stdin ${DOCKERHUB_REGISTRY}"
+                        sh "docker push ${APP_NAME}:latest"
+                    }
                 }
             }
         }
