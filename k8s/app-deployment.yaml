@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: TUO_UTENTE_DOCKER/data-factory-app:latest # Qui useremo l'immagine creata da Jenkins
+        image: giacomo12305/data-factory-app:latest # Qui useremo l'immagine creata da Jenkins
         ports:
         - containerPort: 5000
 ---
