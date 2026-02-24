@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-factory-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: data-factory
+  template:
+    metadata:
+      labels:
+        app: data-factory
+    spec:
+      containers:
+      - name: app
+        image: TUO_UTENTE_DOCKER/data-factory-app:latest # Qui useremo l'immagine creata da Jenkins
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-factory-service
+spec:
+  selector:
+    app: data-factory
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: ClusterIP
