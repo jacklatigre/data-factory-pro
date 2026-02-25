@@ -24,9 +24,13 @@ spec:
       labels:
         app: postgres
     spec:
+      securityContext: # <--- AGGIUNTO PER I PERMESSI RKE2
+        fsGroup: 1001
       containers:
       - name: postgres
         image: bitnami/postgresql:15
+        securityContext: # <--- AGGIUNTO PER L'UTENTE BITNAMI
+          runAsUser: 1001
         env:
         - name: POSTGRESQL_USERNAME
           value: "admin"
@@ -34,13 +38,14 @@ spec:
           value: "password"
         - name: POSTGRESQL_DATABASE
           value: "data_factory_db"
-        # Configurazione per la sincronizzazione (Replication)
         - name: POSTGRESQL_REPLICATION_MODE
           value: "master"
         - name: POSTGRESQL_REPLICATION_USER
           value: "repl_user"
         - name: POSTGRESQL_REPLICATION_PASSWORD
           value: "repl_password"
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
         ports:
         - containerPort: 5432
         volumeMounts:
