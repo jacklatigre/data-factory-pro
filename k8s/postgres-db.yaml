@@ -26,21 +26,20 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:15 # <--- Immagine Debian standard, molto più affidabile
+        # Usiamo Quay.io per saltare il blocco di Docker Hub
+        image: quay.io/postgresql/postgresql-15-openshift:latest
         env:
-        - name: POSTGRES_USER
+        - name: POSTGRESQL_USER
           value: "admin"
-        - name: POSTGRES_PASSWORD
+        - name: POSTGRESQL_PASSWORD
           value: "password"
-        - name: POSTGRES_DB
+        - name: POSTGRESQL_DATABASE
           value: "data_factory_db"
-        # Questo abilita i log necessari per la sincronizzazione
-        args: ["postgres", "-c", "wal_level=replica", "-c", "max_wal_senders=10", "-c", "max_replication_slots=10"]
         ports:
         - containerPort: 5432
         volumeMounts:
         - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
+          mountPath: /var/lib/pgsql/data
   volumeClaimTemplates:
   - metadata:
       name: postgres-storage
