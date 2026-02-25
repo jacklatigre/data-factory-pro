@@ -27,9 +27,23 @@ spec:
       - name: postgres
         image: postgres:15
         env:
+        - name: POSTGRES_USER
+          value: "admin"          # Allineato all'App
         - name: POSTGRES_PASSWORD
-          value: "PasswordSegreta123" # In produzione useremmo i Secrets!
+          value: "password"       # Allineato all'App
         - name: POSTGRES_DB
-          value: "fabbricadati"
+          value: "data_factory_db" # Allineato all'App
         ports:
         - containerPort: 5432
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-path" 
+      resources:
+        requests:
+          storage: 1Gi
