@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: /bitnami/postgresql:15
+        image: bitnami/postgresql:15
         env:
         - name: POSTGRESQL_USERNAME
           value: "admin"
