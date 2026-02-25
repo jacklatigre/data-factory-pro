@@ -6,8 +6,10 @@ spec:
   ports:
     - name: tcp-postgresql
       port: 5432
+      targetPort: 5432
   selector:
-    app: postgres
+    # Puntiamo direttamente al Pod 0 per evitare errori "read-only" sullo Slave
+    statefulset.kubernetes.io/pod-name: postgres-0
 ---
 apiVersion: apps/v1
 kind: StatefulSet
