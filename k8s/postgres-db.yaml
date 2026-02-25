@@ -4,7 +4,7 @@ metadata:
   name: postgres
 spec:
   ports:
-    - name: postgres
+    - name: tcp-postgresql
       port: 5432
   selector:
     app: postgres
@@ -25,29 +25,24 @@ spec:
         app: postgres
     spec:
       securityContext:
-        fsGroup: 26 # ID utente standard per Postgres Debian/Crunchy
+        fsGroup: 999
       containers:
       - name: postgres
-        # Proviamo l'immagine di CrunchyData, famosa per la sincronizzazione nativa
-        image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-15.3-0
+        image: postgres:15.8-bullseye # <--- QUELLA CHE FUNZIONA
+        securityContext:
+          runAsUser: 999
         env:
-        - name: PG_MODE
-          value: "primary" # Questo attiva la logica di sincronizzazione
-        - name: PG_PRIMARY_USER
+        - name: POSTGRES_USER
           value: "admin"
-        - name: PG_PRIMARY_PASSWORD
+        - name: POSTGRES_PASSWORD
           value: "password"
-        - name: PG_DATABASE
+        - name: POSTGRES_DB
           value: "data_factory_db"
-        - name: PG_USER
-          value: "user"
-        - name: PG_PASSWORD
-          value: "password"
         ports:
         - containerPort: 5432
         volumeMounts:
         - name: postgres-storage
-          mountPath: /pgdata
+          mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
   - metadata:
       name: postgres-storage
