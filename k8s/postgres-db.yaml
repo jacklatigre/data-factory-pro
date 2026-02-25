@@ -6,9 +6,20 @@ spec:
   ports:
     - name: tcp-postgresql
       port: 5432
-      targetPort: 5432
   selector:
     app: postgres
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-shared-storage
+spec:
+  accessModes:
+    - ReadWriteOnce # Se il tuo storage supporta RWX sarebbe meglio, ma con local-path usiamo questo
+  storageClassName: "local-path"
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -27,14 +38,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:15-alpine # Leggera, veloce da scaricare e sicura
-        args: # Comandi per attivare la replicazione nell'immagine ufficiale
-          - "-c"
-          - "wal_level=replica"
-          - "-c"
-          - "max_wal_senders=10"
-          - "-c"
-          - "max_replication_slots=10"
+        image: postgres:15-alpine
         env:
         - name: POSTGRES_USER
           value: "admin"
@@ -47,12 +51,7 @@ spec:
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
-  volumeClaimTemplates:
-  - metadata:
-      name: postgres-storage
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "local-path"
-      resources:
-        requests:
-          storage: 1Gi
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-shared-storage
