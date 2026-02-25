@@ -15,7 +15,7 @@ metadata:
   name: postgres
 spec:
   serviceName: "postgres"
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: postgres
@@ -24,13 +24,12 @@ spec:
       labels:
         app: postgres
     spec:
-      securityContext:
-        fsGroup: 999
       containers:
       - name: postgres
-        image: postgres:15.8-bullseye # <--- QUELLA CHE FUNZIONA
+        image: postgres:15.8-bullseye
         securityContext:
-          runAsUser: 999
+          runAsUser: 0
+          runAsGroup: 0
         env:
         - name: POSTGRES_USER
           value: "admin"
@@ -38,6 +37,8 @@ spec:
           value: "password"
         - name: POSTGRES_DB
           value: "data_factory_db"
+        - name: PGDATA
+          value: "/var/lib/postgresql/data/pgdata"
         ports:
         - containerPort: 5432
         volumeMounts:
