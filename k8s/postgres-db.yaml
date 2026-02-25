@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: postgres
 spec:
+  sessionAffinity: ClientIP
   ports:
     - name: tcp-postgresql
       port: 5432
@@ -15,7 +16,7 @@ metadata:
   name: postgres-shared-storage
 spec:
   accessModes:
-    - ReadWriteOnce # Se il tuo storage supporta RWX sarebbe meglio, ma con local-path usiamo questo
+    - ReadWriteOnce 
   storageClassName: "local-path"
   resources:
     requests:
