@@ -28,7 +28,7 @@ spec:
         fsGroup: 1001
       containers:
       - name: postgres
-        image: bitnami/postgresql:15
+        image: bitnami/postgresql:15.8.0
         securityContext: # <--- AGGIUNTO PER L'UTENTE BITNAMI
           runAsUser: 1001
         env:
