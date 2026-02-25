@@ -16,7 +16,7 @@ metadata:
   name: postgres
 spec:
   serviceName: "postgres"
-  replicas: 3 # <--- Ecco i tuoi 3 Pod!
+  replicas: 3
   selector:
     matchLabels:
       app: postgres
@@ -27,28 +27,26 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: bitnami/postgresql:latest
+        image: postgres:15-alpine # Leggera, veloce da scaricare e sicura
+        args: # Comandi per attivare la replicazione nell'immagine ufficiale
+          - "-c"
+          - "wal_level=replica"
+          - "-c"
+          - "max_wal_senders=10"
+          - "-c"
+          - "max_replication_slots=10"
         env:
-        - name: POSTGRESQL_USERNAME
+        - name: POSTGRES_USER
           value: "admin"
-        - name: POSTGRESQL_PASSWORD
+        - name: POSTGRES_PASSWORD
           value: "password"
-        - name: POSTGRESQL_DATABASE
+        - name: POSTGRES_DB
           value: "data_factory_db"
-        - name: POSTGRESQL_REPLICATION_MODE
-          value: "master"
-        - name: POSTGRESQL_REPLICATION_USER
-          value: "repl_user"
-        - name: POSTGRESQL_REPLICATION_PASSWORD
-          value: "repl_password"
-        # Questa logica permette ai pod secondari di sapere chi è il master
-        - name: POSTGRESQL_MASTER_HOST
-          value: "postgres-0.postgres.default.svc.cluster.local"
         ports:
         - containerPort: 5432
         volumeMounts:
         - name: postgres-storage
-          mountPath: /bitnami/postgresql
+          mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
   - metadata:
       name: postgres-storage
