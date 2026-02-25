@@ -3,24 +3,11 @@ kind: Service
 metadata:
   name: postgres
 spec:
-  sessionAffinity: ClientIP
   ports:
     - name: tcp-postgresql
       port: 5432
   selector:
     app: postgres
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: postgres-shared-storage
-spec:
-  accessModes:
-    - ReadWriteOnce 
-  storageClassName: "local-path"
-  resources:
-    requests:
-      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -39,20 +26,32 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:15-alpine
+        image: bitnami/postgresql:15
         env:
-        - name: POSTGRES_USER
+        - name: POSTGRESQL_USERNAME
           value: "admin"
-        - name: POSTGRES_PASSWORD
+        - name: POSTGRESQL_PASSWORD
           value: "password"
-        - name: POSTGRES_DB
+        - name: POSTGRESQL_DATABASE
           value: "data_factory_db"
+        # Configurazione per la sincronizzazione (Replication)
+        - name: POSTGRESQL_REPLICATION_MODE
+          value: "master"
+        - name: POSTGRESQL_REPLICATION_USER
+          value: "repl_user"
+        - name: POSTGRESQL_REPLICATION_PASSWORD
+          value: "repl_password"
         ports:
         - containerPort: 5432
         volumeMounts:
         - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
-      volumes:
-      - name: postgres-storage
-        persistentVolumeClaim:
-          claimName: postgres-shared-storage
+          mountPath: /bitnami/postgresql
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-path"
+      resources:
+        requests:
+          storage: 1Gi
