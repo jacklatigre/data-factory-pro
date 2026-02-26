@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# Configurazione Database: prova a leggere da K8s, altrimenti usa i valori che funzionano ora
+# Configurazione Database: legge dalle variabili d'ambiente di K8s
 DB_HOST = os.getenv('DB_HOST', 'postgres')
 DB_NAME = os.getenv('DB_NAME', 'fabbricadati')
 DB_USER = os.getenv('DB_USER', 'postgres')
@@ -22,10 +22,13 @@ def get_db_connection():
 @app.route('/')
 def index():
     messaggi = []
+    # Recupera il nome del POD assegnato da Kubernetes
+    pod_id = os.getenv('HOSTNAME', 'Sviluppo-Locale')
+    
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        # Recupera tutti i messaggi dal più recente al più vecchio
+        # Recupera tutti i messaggi dal database
         cur.execute('SELECT testo FROM messaggi ORDER BY id DESC;')
         messaggi = cur.fetchall()
         cur.close()
@@ -33,8 +36,8 @@ def index():
     except Exception as e:
         print(f"Errore nel recupero dati: {e}")
     
-    # Passa la lista dei messaggi al template index.html
-    return render_template('index.html', messaggi=messaggi)
+    # Passa i dati e il nome del pod al template index.html
+    return render_template('index.html', messaggi=messaggi, pod_id=pod_id)
 
 @app.route('/salva', methods=['POST'])
 def salva_dati():
@@ -47,14 +50,14 @@ def salva_dati():
             conn.commit()
             cur.close()
             conn.close()
-            # Invece di una scritta bianca, torniamo alla home per vedere il dato inserito
+            # Torna alla home per vedere il nuovo dato nella lista
             return redirect(url_for('index'))
         except Exception as e:
             return f"Errore durante il salvataggio: {e}", 500
     return "Nessun dato inviato", 400
 
 if __name__ == '__main__':
-    # Creazione tabella automatica all'avvio se non esiste
+    # Inizializzazione automatica della tabella se non esiste
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -62,7 +65,8 @@ if __name__ == '__main__':
         conn.commit()
         cur.close()
         conn.close()
-    except:
-        pass
+    except Exception as e:
+        print(f"Database non ancora pronto: {e}")
     
+    # Avvio server Flask sulla porta 5000
     app.run(host='0.0.0.0', port=5000)

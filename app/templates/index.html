@@ -2,100 +2,92 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RKE2 Data Factory</title>
+    <title>Tiger Factory v2.0</title>
     <style>
+        :root {
+            --tiger: #ff8c00;
+            --dark: #0d0d0d;
+            --card: #161616;
+        }
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: #1a1a2e; 
-            color: white; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: var(--dark); color: white; 
+            display: flex; flex-direction: column; align-items: center; 
+            min-height: 100vh; margin: 0; padding: 20px;
         }
         .container { 
-            background: #16213e; 
-            padding: 2rem; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            text-align: center; 
-            max-width: 500px;
-            width: 100%;
+            background: var(--card); padding: 2.5rem; 
+            border-radius: 20px; border: 1px solid #333;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
+            text-align: center; max-width: 500px; width: 100%;
         }
-        h1 { color: #e94560; margin-bottom: 1rem; }
-        input { 
-            padding: 10px; 
-            border-radius: 5px; 
-            border: none; 
-            width: 80%; 
-            margin-bottom: 1rem; 
-            background: #0f3460;
-            color: white;
-        }
-        button { 
-            background: #e94560; 
-            color: white; 
-            border: none; 
-            padding: 10px 20px; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            transition: 0.3s;
-            font-weight: bold;
-        }
-        button:hover { background: #950740; }
+        h1 { color: var(--tiger); margin-bottom: 0.5rem; font-size: 2.5rem; }
+        .subtitle { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
         
-        /* Nuova sezione per i messaggi */
-        .messages-section {
-            margin-top: 2rem;
-            text-align: left;
-            background: #0f3460;
-            padding: 1rem;
-            border-radius: 10px;
-            max-height: 300px;
-            overflow-y: auto;
+        input { 
+            padding: 12px; border-radius: 8px; border: 1px solid #333; 
+            width: 85%; margin-bottom: 1rem; background: #222; color: white;
+            outline: none;
         }
-        .messages-section h3 { color: #4ecca3; margin-top: 0; font-size: 1rem; }
+        input:focus { border-color: var(--tiger); }
+
+        button { 
+            background: var(--tiger); color: black; border: none; 
+            padding: 12px 25px; border-radius: 8px; cursor: pointer;
+            font-weight: bold; text-transform: uppercase; transition: 0.3s;
+        }
+        button:hover { background: #ffae42; transform: scale(1.05); }
+        
+        .messages-section {
+            margin-top: 2rem; text-align: left; background: #111;
+            padding: 1rem; border-radius: 12px; border-left: 4px solid var(--tiger);
+            max-height: 250px; overflow-y: auto;
+        }
         ul { list-style: none; padding: 0; }
         li { 
-            padding: 8px; 
-            border-bottom: 1px solid #16213e; 
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: space-between;
+            padding: 10px; border-bottom: 1px solid #222; 
+            display: flex; justify-content: space-between; font-size: 0.9rem;
         }
-        li:last-child { border-bottom: none; }
-        .status { margin-top: 1rem; font-size: 0.8rem; color: #4ecca3; }
+        .status-footer { 
+            margin-top: 2rem; font-size: 0.7rem; color: #444; 
+            display: flex; justify-content: space-around; width: 100%;
+        }
+        .highlight { color: var(--tiger); font-weight: bold; }
+        .dot { height: 8px; width: 8px; background: #28a745; border-radius: 50%; display: inline-block; margin-right: 5px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Data Factory Pro</h1>
-        <p>Inserisci un dato da salvare nel DB del cluster RKE2</p>
+        <div style="font-size: 3rem; margin-bottom: 10px;">🐯</div>
+        <h1>TIGER FACTORY</h1>
+        <p class="subtitle">RKE2 Cluster & GitOps Managed</p>
         
         <form action="/salva" method="post">
-            <input type="text" name="dato" placeholder="Scrivi qualcosa..." required>
+            <input type="text" name="dato" placeholder="Inserisci un dato per il DB..." required>
             <br>
-            <button type="submit">Invia al Cluster</button>
+            <button type="submit">Deploy to Postgres</button>
         </form>
 
         <div class="messages-section">
-            <h3>Dati nel Database:</h3>
+            <h3 style="color: #555; font-size: 0.8rem; margin-top: 0;">DATABASE RECORDS</h3>
             <ul>
                 {% for m in messaggi %}
                     <li>
                         <span>{{ m[0] }}</span>
-                        <small style="color: #e94560;">#{{ loop.revindex }}</small>
+                        <span style="color: var(--tiger);">#{{ loop.revindex }}</span>
                     </li>
                 {% else %}
-                    <li>Nessun dato presente nel DB.</li>
+                    <li style="color: #333;">Nessun dato nel database...</li>
                 {% endfor %}
             </ul>
         </div>
+    </div>
 
-        <div class="status">Node Master: Running | Workers: 2 | GitOps: Synced</div>
+    <div class="status-footer">
+        <span><span class="dot"></span> CLUSTER: ONLINE</span>
+        <span>|</span>
+        <span>POD ATTIVO: <span class="highlight">{{ pod_id }}</span></span>
     </div>
 </body>
 </html>
