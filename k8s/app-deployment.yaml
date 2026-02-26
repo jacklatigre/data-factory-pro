@@ -4,7 +4,7 @@ metadata:
   name: data-factory-app
 spec:
   replicas: 3
-  revisionHistoryLimit: 3  # <--- Questo pulirà i ReplicaSet in eccesso su ArgoCD
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: data-factory
@@ -20,13 +20,25 @@ spec:
         - containerPort: 5000
         env:
         - name: DB_HOST
-          value: "postgres"
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_HOST
         - name: DB_NAME
-          value: "data_factory_db"
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_NAME
         - name: DB_USER
-          value: "admin"
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_USER
         - name: DB_PASS
-          value: "password"
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: DB_PASS
 ---
 apiVersion: v1
 kind: Service
