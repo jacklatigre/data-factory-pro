@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: data-factory-app
-  namespace: data-factory-app # Spostiamo il Deployment qui
+  namespace: data-factory-app
 spec:
   replicas: 2
   revisionHistoryLimit: 3
@@ -23,7 +23,7 @@ spec:
         - name: DB_HOST
           valueFrom:
             configMapKeyRef:
-              name: app-config # Lo trova perché è nello stesso namespace
+              name: app-config
               key: DB_HOST
         - name: DB_NAME
           valueFrom:
@@ -37,7 +37,7 @@ spec:
               key: DB_USER
         - name: DB_PASS
           valueFrom:
-            configMapKeyRef:
+            secretKeyRef: # <--- CORRETTO: era configMapKeyRef
               name: app-secrets
               key: DB_PASS
 ---
@@ -45,7 +45,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: data-factory-service
-  namespace: data-factory-app # Anche il servizio deve stare qui
+  namespace: data-factory-app
 spec:
   selector:
     app: data-factory
