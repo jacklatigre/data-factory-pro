@@ -8,7 +8,6 @@ spec:
       port: 5432
       targetPort: 5432
   selector:
-    # Puntiamo direttamente al Pod 0 per evitare errori "read-only" sullo Slave
     statefulset.kubernetes.io/pod-name: postgres-0
 ---
 apiVersion: apps/v1
@@ -26,12 +25,12 @@ spec:
       labels:
         app: postgres
     spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
       containers:
       - name: postgres
         image: postgres:15.8-bullseye
-        securityContext:
-          runAsUser: 0
-          runAsGroup: 0
         env:
         - name: POSTGRES_USER
           value: "admin"
@@ -46,6 +45,13 @@ spec:
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: "400Mi"
+            cpu: "200m"
+          limits:
+            memory: "768Mi"
+            cpu: "500m"
   volumeClaimTemplates:
   - metadata:
       name: postgres-storage
