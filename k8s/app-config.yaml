@@ -9,7 +9,8 @@ metadata:
   name: app-config
   namespace: data-factory-app
 data:
-  # Puntiamo al database nell'altro namespace usando il DNS completo
+  # L'indirizzo completo permette all'app di "uscire" dal suo namespace
+  # e trovare il database in data-factory-db
   DB_HOST: "postgres.data-factory-db.svc.cluster.local"
   DB_NAME: "data_factory_db"
   DB_USER: "admin"
