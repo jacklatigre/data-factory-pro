@@ -1,7 +1,13 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: data-factory-db
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: postgres
+  namespace: data-factory-db
 spec:
   ports:
     - name: tcp-postgresql
@@ -14,6 +20,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
+  namespace: data-factory-db
 spec:
   serviceName: "postgres"
   replicas: 3

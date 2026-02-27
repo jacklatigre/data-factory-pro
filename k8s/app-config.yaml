@@ -1,9 +1,16 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: data-factory-app
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: app-config
+  namespace: data-factory-app
 data:
-  DB_HOST: "postgres"
+  # Puntiamo al database nell'altro namespace usando il DNS completo
+  DB_HOST: "postgres.data-factory-db.svc.cluster.local"
   DB_NAME: "data_factory_db"
   DB_USER: "admin"
 ---
@@ -11,6 +18,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: app-secrets
+  namespace: data-factory-app
 type: Opaque
 stringData:
-  DB_PASS: "password" # Qui metti la password reale che usa Postgres
+  DB_PASS: "password"
