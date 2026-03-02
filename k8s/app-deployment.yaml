@@ -19,6 +19,26 @@ spec:
         image: giacomo12305/data-factory-app:latest
         ports:
         - containerPort: 5000
+        # --- AGGIUNTA SONDE DI AFFIDABILITÀ ---
+        startupProbe:
+          httpGet:
+            path: /
+            port: 5000
+          failureThreshold: 12
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        # --- FINE AGGIUNTA ---
         env:
         - name: DB_HOST
           valueFrom:
@@ -37,7 +57,7 @@ spec:
               key: DB_USER
         - name: DB_PASS
           valueFrom:
-            secretKeyRef: # <--- CORRETTO: era configMapKeyRef
+            secretKeyRef:
               name: app-secrets
               key: DB_PASS
 ---
