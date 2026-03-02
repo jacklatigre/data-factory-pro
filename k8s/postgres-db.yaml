@@ -4,6 +4,15 @@ metadata:
   name: data-factory-db
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: data-factory-db
+data:
+  POSTGRES_USER: "admin"
+  POSTGRES_DB: "data_factory_db"
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: postgres
@@ -40,11 +49,20 @@ spec:
         image: postgres:15.8-bullseye
         env:
         - name: POSTGRES_USER
-          value: "admin"
-        - name: POSTGRES_PASSWORD
-          value: "password"
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_USER
         - name: POSTGRES_DB
-          value: "data_factory_db"
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_DB
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: POSTGRES_PASSWORD
         - name: PGDATA
           value: "/var/lib/postgresql/data/pgdata"
         ports:
