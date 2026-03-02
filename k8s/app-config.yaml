@@ -14,12 +14,4 @@ data:
   DB_HOST: "postgres.data-factory-db.svc.cluster.local"
   DB_NAME: "data_factory_db"
   DB_USER: "admin"
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: app-secrets
-  namespace: data-factory-app
-type: Opaque
-stringData:
-  DB_PASS: "password"
+
