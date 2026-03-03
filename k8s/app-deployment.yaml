@@ -56,7 +56,7 @@ spec:
               key: DB_USER
         - name: DB_PASS
           valueFrom:
-            configMapKeyRef:
+            secretKeyRef: # <--- CORRETTO: Adesso punta a un Secret
               name: app-secrets
               key: DB_PASS
 ---
@@ -72,4 +72,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 5000
-  type: ClusterIP # <--- MODIFICATO DA LoadBalancer A ClusterIP
+  type: ClusterIP
