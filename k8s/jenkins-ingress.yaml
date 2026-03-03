@@ -7,7 +7,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-  - host: jenkins.192.168.64.100.nip.io
+  - host: jenkins.192.168.64.100.nip.io # Già corretto, ma tienilo così
     http:
       paths:
       - path: /

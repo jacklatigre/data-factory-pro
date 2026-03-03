@@ -19,7 +19,7 @@ spec:
         image: giacomo12305/data-factory-app:latest
         ports:
         - containerPort: 5000
-        # --- AGGIUNTA SONDE DI AFFIDABILITÀ ---
+        # --- SONDE DI AFFIDABILITÀ ---
         startupProbe:
           httpGet:
             path: /
@@ -38,7 +38,6 @@ spec:
             port: 5000
           initialDelaySeconds: 5
           periodSeconds: 10
-        # --- FINE AGGIUNTA ---
         env:
         - name: DB_HOST
           valueFrom:
@@ -57,7 +56,7 @@ spec:
               key: DB_USER
         - name: DB_PASS
           valueFrom:
-            secretKeyRef:
+            configMapKeyRef:
               name: app-secrets
               key: DB_PASS
 ---
@@ -73,4 +72,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 5000
-  type: LoadBalancer
+  type: ClusterIP # <--- MODIFICATO DA LoadBalancer A ClusterIP
