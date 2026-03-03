@@ -6,8 +6,9 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
+  ingressClassName: nginx
   rules:
-  - host: data-factory.192.168.64.100.nip.io # Aggiornato a .100
+  - host: data-factory.192.168.64.100.nip.io
     http:
       paths:
       - path: /
